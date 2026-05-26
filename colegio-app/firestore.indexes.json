@@ -1,0 +1,28 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "alumnos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "parenteUid", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "recoger",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "parenteUid", "order": "ASCENDING" },
+        { "fieldPath": "activo", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "recoger",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "activo", "order": "ASCENDING" },
+        { "fieldPath": "carril", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

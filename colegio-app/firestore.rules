@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Parientes: solo el propio usuario puede leer/escribir su documento
+    match /parientes/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Alumnos: solo el pariente dueño puede leer/escribir
+    match /alumnos/{alumnoId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == resource.data.parenteUid;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.parenteUid;
+    }
+
+    // Recoger: parientes autenticados pueden crear/eliminar sus propios registros
+    // El sistema colegio (monitor) puede leer todos los registros activos
+    match /recoger/{recogerDocId} {
+      allow read: if request.auth != null
+        || true; // monitor web puede leer sin auth
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.parenteUid;
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.parenteUid;
+    }
+  }
+}

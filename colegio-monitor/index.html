@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Colegio – Recoger Estudiantes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #3880ff;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    header h1 { font-size: 20px; font-weight: 600; }
+
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #2dd36f;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .live-badge {
+      font-size: 12px;
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: auto;
+    }
+
+    main {
+      padding: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .badge {
+      width: 16px; height: 16px;
+      border-radius: 3px;
+    }
+
+    .badge.preescolar { background: #f4c542; }
+    .badge.primaria   { background: #eb445a; }
+    .badge.bachillerato { background: #2dd36f; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .carril-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .carril-header {
+      background: #3880ff;
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .carril-body {
+      min-height: 200px;
+      padding: 8px;
+    }
+
+    .student-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      margin: 4px 0;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      color: #1a1a2e;
+      transition: opacity 0.3s;
+      justify-content: space-between;
+    }
+
+    .student-row.preescolar  { background: #f4c542; }
+    .student-row.primaria    { background: #eb445a; color: white; }
+    .student-row.bachillerato { background: #2dd36f; }
+
+    .student-section {
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.85;
+      margin-left: 8px;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #aaa;
+      padding: 40px 16px;
+      font-size: 14px;
+    }
+
+    .total-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.3);
+      border-radius: 12px;
+      padding: 1px 8px;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+
+    .status-bar {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="dot"></div>
+  <h1>Sistema para Recoger Estudiantes</h1>
+  <span class="live-badge">EN VIVO</span>
+</header>
+
+<main>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="badge preescolar"></div>
+      <span>Pre-escolar</span>
+    </div>
+    <div class="legend-item">
+      <div class="badge primaria"></div>
+      <span>Primaria</span>
+    </div>
+    <div class="legend-item">
+      <div class="badge bachillerato"></div>
+      <span>Bachillerato</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="carril-card">
+      <div class="carril-header">
+        Carril 1 <span class="total-badge" id="total-1">0</span>
+      </div>
+      <div class="carril-body" id="carril-1">
+        <div class="empty-msg">Sin estudiantes</div>
+      </div>
+    </div>
+
+    <div class="carril-card">
+      <div class="carril-header">
+        Carril 2 <span class="total-badge" id="total-2">0</span>
+      </div>
+      <div class="carril-body" id="carril-2">
+        <div class="empty-msg">Sin estudiantes</div>
+      </div>
+    </div>
+
+    <div class="carril-card">
+      <div class="carril-header">
+        Carril 3 <span class="total-badge" id="total-3">0</span>
+      </div>
+      <div class="carril-body" id="carril-3">
+        <div class="empty-msg">Sin estudiantes</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar" id="status">Conectando con Firebase...</div>
+</main>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+  import { getFirestore, collection, query, where, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: 'AIzaSyASgDnKNEf3K38MI7MsaptWNB-YAa6ZW7Y',
+    authDomain: 'appgeolocalizacion-c8fa7.firebaseapp.com',
+    projectId: 'appgeolocalizacion-c8fa7',
+    storageBucket: 'appgeolocalizacion-c8fa7.firebasestorage.app',
+    messagingSenderId: '14065395306',
+    appId: '1:14065395306:web:990275fe25863a48d6cc13'
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const seccionClass = {
+    'pre-escolar': 'preescolar',
+    'primaria': 'primaria',
+    'bachillerato': 'bachillerato'
+  };
+
+  const seccionLabel = {
+    'pre-escolar': 'Pre-escolar',
+    'primaria': 'Primaria',
+    'bachillerato': 'Bachillerato'
+  };
+
+  function renderCarriles(students) {
+    const byCarril = { 1: [], 2: [], 3: [] };
+
+    students.forEach(s => {
+      const c = s.carril;
+      if (byCarril[c]) byCarril[c].push(s);
+    });
+
+    [1, 2, 3].forEach(c => {
+      const body = document.getElementById(`carril-${c}`);
+      const total = document.getElementById(`total-${c}`);
+      const list = byCarril[c];
+
+      total.textContent = list.length;
+
+      if (list.length === 0) {
+        body.innerHTML = '<div class="empty-msg">Sin estudiantes</div>';
+        return;
+      }
+
+      body.innerHTML = list.map(s => `
+        <div class="student-row ${seccionClass[s.seccion] || ''}">
+          <span>${s.alumnoNombre}</span>
+          <span class="student-section">${seccionLabel[s.seccion] || s.seccion}</span>
+        </div>
+      `).join('');
+    });
+  }
+
+  const q = query(collection(db, 'recoger'), where('activo', '==', true));
+
+  onSnapshot(q, snapshot => {
+    const students = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCarriles(students);
+
+    const now = new Date().toLocaleTimeString('es-CO');
+    document.getElementById('status').textContent =
+      `Última actualización: ${now} · ${students.length} estudiante(s) esperando`;
+  }, err => {
+    document.getElementById('status').textContent = 'Error de conexión: ' + err.message;
+  });
+</script>
+
+</body>
+</html>

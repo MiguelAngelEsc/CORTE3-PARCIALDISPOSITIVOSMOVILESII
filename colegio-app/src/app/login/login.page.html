@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Sistema Escolar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="login-wrapper">
+    <div class="logo-section">
+      <ion-icon name="school-outline" style="font-size: 64px; color: var(--ion-color-primary)"></ion-icon>
+      <h2>Bienvenido</h2>
+      <p>Sistema de Entrega de Estudiantes</p>
+    </div>
+
+    <ion-list lines="full" class="ion-margin-top">
+      <ion-item>
+        <ion-label position="stacked">CÉDULA</ion-label>
+        <ion-input [(ngModel)]="cedula" type="tel" inputmode="numeric" placeholder="Número de cédula" clearInput></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">CONTRASEÑA</ion-label>
+        <ion-input [(ngModel)]="password" type="password" placeholder="Contraseña"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" (click)="login()">Entrar</ion-button>
+      <ion-button expand="block" fill="clear" class="ion-margin-top" (click)="goToRegistrar()">
+        ¿No tienes cuenta? <strong>&nbsp;Registrar</strong>
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
